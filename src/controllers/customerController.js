@@ -88,7 +88,7 @@ exports.authenticate = async(req, res, next) => {
     }
 } 
 
-/*
+// Refresh Token
 exports.refreshToken = async(req, res, next) => {
     try {
         const token = req.body.token || req.query.token || req.headers['x-access-token'] 
@@ -123,4 +123,3 @@ exports.refreshToken = async(req, res, next) => {
         }) 
     }
 }
-*/
