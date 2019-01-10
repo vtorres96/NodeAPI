@@ -2,6 +2,7 @@ const ValidationContract = require('../validators/fluentValidator.js')
 const repository = require('../repositories/customerRepository')
 const md5 = require('md5')
 const emailService = require('../services/emailService')
+const authService = require('../services/authService')
 
 // List Items
 exports.get = async(req, res, next) => {
@@ -35,7 +36,6 @@ exports.post = async(req, res, next) => {
             password: md5(req.body.password + global.SALT_KEY)
         })
 
-
         emailService.send(
             req.body.email,
             'Bem vindo ao Node Store',
@@ -52,27 +52,25 @@ exports.post = async(req, res, next) => {
     }
 }
 
-/*
+// Authenticate Token
 exports.authenticate = async(req, res, next) => {
     try {
         const customer = await repository.authenticate({
             email: req.body.email,
             password: md5(req.body.password + global.SALT_KEY)
-        });
+        }) 
 
         if (!customer) {
             res.status(404).send({
                 message: 'Usuário ou senha inválidos'
-            });
-            return;
+            }) 
+            return 
         }
 
         const token = await authService.generateToken({
-            id: customer._id,
             email: customer.email,
-            name: customer.name,
-            roles: customer.roles
-        });
+            name: customer.name
+        }) 
 
         res.status(201).send({
             token: token,
@@ -80,26 +78,27 @@ exports.authenticate = async(req, res, next) => {
                 email: customer.email,
                 name: customer.name
             }
-        });
+        }) 
     } catch (e) {
         res.status(500).send({
             message: 'Falha ao processar sua requisição'
-        });
+        }) 
     }
-};
+} 
 
+/*
 exports.refreshToken = async(req, res, next) => {
     try {
-        const token = req.body.token || req.query.token || req.headers['x-access-token'];
-        const data = await authService.decodeToken(token);
+        const token = req.body.token || req.query.token || req.headers['x-access-token'] 
+        const data = await authService.decodeToken(token) 
 
-        const customer = await repository.getById(data.id);
+        const customer = await repository.getById(data.id) 
 
         if (!customer) {
             res.status(404).send({
                 message: 'Cliente não encontrado'
-            });
-            return;
+            }) 
+            return 
         }
 
         const tokenData = await authService.generateToken({
@@ -107,7 +106,7 @@ exports.refreshToken = async(req, res, next) => {
             email: customer.email,
             name: customer.name,
             roles: customer.roles
-        });
+        }) 
 
         res.status(201).send({
             token: token,
@@ -115,11 +114,11 @@ exports.refreshToken = async(req, res, next) => {
                 email: customer.email,
                 name: customer.name
             }
-        });
+        }) 
     } catch (e) {
         res.status(500).send({
             message: 'Falha ao processar sua requisição'
-        });
+        }) 
     }
 }
 */
