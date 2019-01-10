@@ -1,5 +1,6 @@
 const repository = require('../repositories/orderRepository')
 const guid = require('guid')
+const authService = require('../services/authService')
 
 // List Items
 exports.get = async(req, res, next) => {
@@ -16,8 +17,14 @@ exports.get = async(req, res, next) => {
 // Create
 exports.post = async(req, res, next) => {
     try {
+        // Catching the Token
+        const token = req.body.token || req.query.token || req.headers['x-access-token']
+
+        // Decode the Token
+        const data = await authService.decodeToken(token)
+
         await repository.create({
-            customer: req.body.customer,
+            customer: data.id,
             number: guid.raw().substring(0,6),
             items: req.body.items  
         })
